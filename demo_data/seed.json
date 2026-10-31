@@ -1,0 +1,85 @@
+{
+  "start_of_shift": {
+    "id": "INS-001",
+    "job_name": "Press brake: start-of-shift check",
+    "machine": "Press brake (all jobs)",
+    "transcript": "",
+    "status": "approved",
+    "author": "Dave",
+    "approver": "Priya",
+    "version": 1,
+    "days_ago": 21,
+    "body": {
+      "purpose": "Make sure the press brake is safe and ready before the first job of the shift.",
+      "tools": ["Light curtain test rod", "Job sheet"],
+      "steps": [
+        "Test the light curtain: pass the test rod through it and confirm the ram stops.",
+        "Inspect the punch and die for chips or cracks.",
+        "Clear the work area: no loose parts, offcuts or tools on the bed or the floor around it.",
+        "Confirm the job sheet for your first job of the shift."
+      ],
+      "quality_checks": [
+        "Light curtain stops the ram on every test.",
+        "No chips or cracks on the tooling."
+      ],
+      "safety_notes": [
+        "If the light curtain does not stop the ram, do not run the machine. Tell your lead."
+      ],
+      "common_mistakes": [
+        "Skipping the light curtain test because the machine ran fine yesterday.",
+        "Missing small chips on the die."
+      ],
+      "low_confidence": []
+    }
+  },
+  "backup_br220": {
+    "id": "INS-BR220-B",
+    "job_name": "Press brake setup: bracket BR-220",
+    "machine": "Press brake, 10-gauge mild steel",
+    "transcript_file": "dave_br220.txt",
+    "status": "approved",
+    "author": "Dave",
+    "approver": "Priya",
+    "version": 1,
+    "days_ago": 1,
+    "is_backup": 1,
+    "body": {
+      "purpose": "Set up the press brake to bend BR-220 brackets (10-gauge mild steel, one 90-degree bend) without scrapping parts.",
+      "tools": ["One-inch V die", "Matching punch", "Protractor", "Job sheet"],
+      "steps": [
+        "Check the job sheet for BR-220.",
+        "Lock out the machine before you change any tooling.",
+        "Grab the one-inch V die and the matching punch. Look them over for chips.",
+        "Set the back gauge to the flange length on the job sheet.",
+        "Bend a test piece from the same batch of steel first.",
+        "Check the test piece with the protractor. If it comes out at 92 degrees (or anything other than 90), adjust before you run the order.",
+        "Get your first good part signed off by your lead, then run the order."
+      ],
+      "quality_checks": [
+        "Test piece measures 90 degrees with the protractor.",
+        "First good part signed off by your lead.",
+        "No die marks on the parts."
+      ],
+      "safety_notes": [
+        "Before you change any tooling you lock out the machine, every time, no exceptions.",
+        "Keep your hands out of the light curtain. If it trips, you stop and figure out why."
+      ],
+      "common_mistakes": [
+        "Skipping the test piece. Steel from different suppliers springs back different.",
+        "Adjusting after the order runs instead of before, and scrapping twenty parts.",
+        "Running with a chipped die. A chipped die marks every part."
+      ],
+      "low_confidence": []
+    }
+  },
+  "questions": [
+    {"question": "What do I check before my first job of the shift?", "asked_by": "Jordan", "answered": 1, "source_id": "INS-001", "helpful": 1, "days_ago": 12},
+    {"question": "How do I test the light curtain?", "asked_by": "Sam", "answered": 1, "source_id": "INS-001", "helpful": 1, "days_ago": 11},
+    {"question": "What am I looking for when I inspect the die?", "asked_by": "Jordan", "answered": 1, "source_id": "INS-001", "helpful": 1, "days_ago": 9},
+    {"question": "What's the bend allowance for 3/16 aluminum?", "asked_by": "Sam", "answered": 0, "source_id": null, "helpful": null, "days_ago": 8},
+    {"question": "Do I need to clear offcuts off the floor too?", "asked_by": "Jordan", "answered": 1, "source_id": "INS-001", "helpful": 0, "days_ago": 6},
+    {"question": "What if the light curtain doesn't stop the ram?", "asked_by": "Sam", "answered": 1, "source_id": "INS-001", "helpful": 1, "days_ago": 4},
+    {"question": "How do I change the hydraulic oil on the press brake?", "asked_by": "Jordan", "answered": 0, "source_id": null, "helpful": null, "days_ago": 3},
+    {"question": "Which job sheet do I start with?", "asked_by": "Jordan", "answered": 1, "source_id": "INS-001", "helpful": null, "days_ago": 2}
+  ]
+}
