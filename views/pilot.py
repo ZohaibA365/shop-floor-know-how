@@ -3,10 +3,11 @@ from datetime import datetime
 import streamlit as st
 
 from core import db
-from core.ui import APP_NAME, card
+from core.ui import APP_NAME, card, goal_card, stage_strip
 
 st.caption(APP_NAME)
 st.title("Pilot Plan & Metrics")
+stage_strip()
 
 # ---------- timeline ----------
 st.subheader("4-week pilot")
@@ -16,10 +17,13 @@ weeks = [
     ("Weeks 2–3", "Use", "New hires use Ask. Gaps captured twice a week."),
     ("Week 4", "Decide", "Compare against baseline. Expand, adjust or stop."),
 ]
-for col, (when, title, text) in zip(st.columns(4), weeks):
-    col.markdown(card(f"{when} · {title}", text), unsafe_allow_html=True)
+with st.container(key="week_cards"):
+    for col, (when, title, text) in zip(st.columns(4), weeks):
+        col.markdown(card(f"{when} · {title}", text), unsafe_allow_html=True)
+st.markdown('<div class="scope-line">Every week: 30-minute progress check-in with the supervisor to review KPIs, '
+            'new gaps and which jobs to capture next.</div>', unsafe_allow_html=True)
 
-# ---------- live KPIs ----------
+# ---------- success metrics ----------
 include_backup = st.session_state.get("use_backup", False)
 approved = db.approved_for_ask(include_backup)
 questions = db.all_questions()
@@ -33,43 +37,45 @@ if questions:
 else:
     per_hire_week = None
 
-st.subheader("KPIs")
+st.subheader("Success metrics, agreed with the owner in Week 0")
 st.caption("Current is pulled live from the app's database.")
-m1, m2, m3, m4 = st.columns(4)
-m1.metric("Instructions approved", len(approved))
-m2.metric("Questions asked", len(questions))
-m3.metric("Answers marked helpful", f"{helpful_pct}%" if helpful_pct is not None else "–")
-m4.metric("Open gaps", len(db.open_gaps()))
-
 kpis = [
     ("Supervisor hours on repeat questions (per lead, per week)", "5", "Down 30% (3.5)", "Measured in week 4"),
     ("Instructions approved", "0", "10+", str(len(approved))),
     ("Answers marked helpful", "–", "70%+", f"{helpful_pct}% of {len(rated)} rated" if rated else "–"),
     ("Questions asked per new hire per week", "Not tracked", "Tracked weekly",
      f"{per_hire_week:.1f}" if per_hire_week is not None else "–"),
-    ("Unsafe or made-up answers in spot checks", "–", "0", "Weekly spot check + eval.py"),
+    ("Unsafe or made-up answers in spot checks", "–", "0", "Weekly spot check + 15‑question test set"),
 ]
 table = "| KPI | Baseline | Target | Current |\n|---|---|---|---|\n"
 table += "".join(f"| {k} | {b} | {t} | **{c}** |\n" for k, b, t, c in kpis)
 st.markdown(table)
 
-# ---------- training, guardrails, roadmap ----------
-c1, c2, c3 = st.columns(3, gap="large")
-with c1:
-    st.subheader("Training")
+# ---------- roadmap ----------
+st.subheader("Roadmap")
+st.markdown("- **Release 1 (now):** capture, approve, ask\n"
+            "- **Release 2:** ranked gap list and search once instructions outgrow the prompt "
+            "(starts only if pilot targets are hit)\n"
+            "- **Release 3:** photos and clips, review dates, onboarding checklists")
+
+# ---------- where AI fits ----------
+st.markdown(card("Where AI fits, and what stays human",
+                 "<b>AI</b> drafts instructions and answers only from approved text. <b>People</b> approve, "
+                 "own safety and decide what gets captured.<br><br>Release 1 uses a language model with no "
+                 "custom ML. Release 2's search is where I'd bring in an ML specialist, to decide when to move "
+                 "beyond sending every instruction in the prompt and how to measure answer quality."),
+            unsafe_allow_html=True)
+st.write("")
+
+# ---------- training and guardrails ----------
+c1, c2 = st.columns(2)
+with c1.expander("Training", expanded=False):
     st.markdown("- **Veterans:** 15 min\n- **Supervisors:** 20 min\n"
                 "- **New hires:** 10 min + a one-page card\n\nThe supervisor is the **floor champion**.")
-with c2:
-    st.subheader("Guardrails")
+with c2.expander("Guardrails", expanded=False):
     st.markdown("- Nothing goes live without approval\n- Answers only from approved instructions, with sources\n"
                 "- Safety notes kept word for word\n- Unknowns go to a person\n"
                 "- Shop data not used for model training\n- Veterans credited as authors")
-with c3:
-    st.subheader("Roadmap")
-    st.markdown("- **Release 1 (now):** capture, approve, ask\n"
-                "- **Release 2:** ranked gap list and search once instructions outgrow the prompt "
-                "(starts only if pilot targets are hit)\n"
-                "- **Release 3:** photos and clips, review dates, onboarding checklists")
 
 # ---------- user stories ----------
 STORIES = [
@@ -92,3 +98,6 @@ with st.expander("Release 1 user stories", expanded=False):
     for n, (story, done) in enumerate(STORIES, 1):
         st.markdown(card(f"Story {n}", f"{story}<br><br><b>Done when:</b> {done}"), unsafe_allow_html=True)
         st.write("")
+
+goal_card("The goal", "The goal isn't to introduce AI for the sake of introducing it. It's to learn where the "
+                      "friction is in a business and meaningfully improve how they operate.")

@@ -27,7 +27,12 @@ h1 {{ font-size: 2.3rem !important; }}
 h2 {{ font-size: 1.7rem !important; }}
 h3 {{ font-size: 1.35rem !important; }}
 p, li, label, .stMarkdown {{ font-size: 1.05rem; }}
-.stButton button {{ font-size: 1rem; border-radius: 8px; }}
+.stButton button {{ font-size: 1rem; border-radius: 8px; height: auto; }}
+/* Wrap long button labels instead of cutting them off with "…" on narrow screens. */
+.stButton button *, .stFormSubmitButton button * {{ white-space: normal !important; overflow: visible !important;
+  text-overflow: clip !important; word-break: normal !important; overflow-wrap: normal !important; }}
+/* Short rating buttons sit in narrow columns: keep them on one line. */
+[class*="st-key-up_"] button *, [class*="st-key-down_"] button * {{ white-space: nowrap !important; }}
 
 .role-pill {{
   display: inline-block; background: #EAF1F8; color: {STEEL};
@@ -41,10 +46,29 @@ p, li, label, .stMarkdown {{ font-size: 1.05rem; }}
 .badge-sent_back {{ background: #B9770E; }}
 
 .card {{ background: #FFFFFF; border: 1px solid #E1E5EA; border-left: 6px solid {STEEL};
-  border-radius: 10px; padding: 18px 20px; height: 100%; }}
+  border-radius: 10px; padding: 18px 20px; height: 100%; box-sizing: border-box; }}
 .card h4 {{ margin: 0 0 6px 0; color: {STEEL}; font-size: 1.15rem; }}
 .card p {{ margin: 0; color: #2B3138; }}
-.card .big {{ font-size: 2rem; font-weight: 800; color: #1F2A36; }}
+.card .big {{ font-size: clamp(1.4rem, 2.4vw, 2rem); font-weight: 800; color: #1F2A36;
+  white-space: nowrap; }}
+
+/* Never break words mid-word inside cards and strips. */
+.card, .card *, .stage, .stage *, .goal-card, .goal-card *, .scope-line {{
+  word-break: normal !important; overflow-wrap: normal !important; hyphens: none !important; }}
+
+/* Card rows reflow when the main area is narrow (e.g. a ~1000px window with the sidebar open). */
+.st-key-week_cards, .st-key-problem_cards {{ container-type: inline-size; }}
+/* Streamlit pulls markdown up by 1rem; without this the cards hang into the row gap. */
+.st-key-week_cards .card, .st-key-problem_cards .card {{ margin-bottom: 1rem; }}
+.st-key-week_cards [data-testid="stHorizontalBlock"],
+.st-key-problem_cards [data-testid="stHorizontalBlock"] {{ flex-wrap: wrap !important; row-gap: 1rem !important; }}
+@container (max-width: 860px) {{
+  .st-key-week_cards [data-testid="stColumn"] {{
+    flex: 1 1 calc(50% - 1rem) !important; min-width: calc(50% - 1rem) !important; }}
+}}
+@container (max-width: 620px) {{
+  .st-key-problem_cards [data-testid="stColumn"] {{ flex: 1 1 100% !important; min-width: 100% !important; }}
+}}
 
 .safety-box {{ background: #FDEDEC; border: 2px solid {RED}; border-radius: 10px;
   padding: 12px 16px; margin: 8px 0; color: #78281F; }}
@@ -59,6 +83,18 @@ p, li, label, .stMarkdown {{ font-size: 1.05rem; }}
   padding: 5px 14px; margin: 0 6px 6px 0; font-size: 0.95rem; }}
 .scope-line {{ background: #EAF1F8; border-radius: 10px; padding: 14px 18px;
   font-weight: 600; color: #24476B; margin-top: 1rem; }}
+
+.stage-wrap {{ container-type: inline-size; margin: 0.2rem 0 1.2rem 0; }}
+.stage-strip {{ display: flex; flex-wrap: wrap; gap: 6px; }}
+@container (max-width: 700px) {{ .stage {{ flex: 1 1 calc(50% - 6px) !important; }} }}
+.stage {{ flex: 1 1 0; min-width: 0; background: #EAF1F8; border-top: 4px solid {STEEL}; border-radius: 6px;
+  padding: 8px 12px; }}
+.stage b {{ color: {STEEL}; font-size: 1rem; }}
+.stage span {{ display: block; color: #4A5562; font-size: 0.88rem; line-height: 1.35; }}
+.goal-card {{ border-left: 8px solid {STEEL}; background: #EAF1F8; border-radius: 10px;
+  padding: 26px 30px; margin-top: 1.5rem; }}
+.goal-card h4 {{ margin: 0 0 10px 0; color: {STEEL}; font-size: 1.3rem; }}
+.goal-card p {{ margin: 0; font-size: 1.55rem; line-height: 1.45; color: #1F2A36; font-weight: 600; }}
 
 /* Section containers created with st.container(key=...) */
 .st-key-answer_card, .st-key-noanswer_card {{
@@ -106,6 +142,25 @@ def lowconf_box(text: str) -> str:
 def card(title: str, body: str, big: str = "") -> str:
     big_html = f'<div class="big">{esc(big)}</div>' if big else ""
     return f'<div class="card"><h4>{esc(title)}</h4>{big_html}<p>{body}</p></div>'
+
+
+STAGES = [
+    ("Match", "One clear problem, scoped with the owner and supervisor"),
+    ("Build", "Capture, Review, Ask"),
+    ("Deploy", "4-week pilot on one machine area"),
+    ("Measure", "KPIs agreed in Week 0"),
+]
+
+
+def stage_strip():
+    steps = "".join(f'<div class="stage"><b>{esc(name)}</b><span>{esc(line)}</span></div>'
+                    for name, line in STAGES)
+    st.markdown(f'<div class="stage-wrap"><div class="stage-strip">{steps}</div></div>', unsafe_allow_html=True)
+
+
+def goal_card(title: str, text: str):
+    st.markdown(f'<div class="goal-card"><h4>{esc(title)}</h4><p>{esc(text)}</p></div>',
+                unsafe_allow_html=True)
 
 
 def chips(items):

@@ -23,7 +23,7 @@ def client() -> anthropic.Anthropic:
     if _client is None:
         load_dotenv()
         if not os.getenv("ANTHROPIC_API_KEY"):
-            raise LLMError("No API key found. Add ANTHROPIC_API_KEY to the .env file and restart.")
+            raise LLMError("No API key found. Add the API key to the app's secrets and restart.")
         _client = anthropic.Anthropic(timeout=45.0, max_retries=1)
     return _client
 
@@ -41,7 +41,7 @@ def _send(system: str, messages: list, schema: dict) -> str:
             fallbacks="default",
         )
     except anthropic.AuthenticationError:
-        raise LLMError("The API key was rejected. Check ANTHROPIC_API_KEY in .env.")
+        raise LLMError("The API key was rejected. Check the key in the app's secrets.")
     except anthropic.RateLimitError:
         raise LLMError("Rate limited by the API. Wait a few seconds and try again.")
     except anthropic.APIConnectionError:

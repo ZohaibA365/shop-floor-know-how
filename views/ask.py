@@ -62,18 +62,18 @@ if last:
                 f'{nice_date(src["approved_at"])} · v{src["version"]}</div>',
                 unsafe_allow_html=True,
             )
-            c1, c2, c3 = st.columns([1, 1, 6])
             if last["rated"] is None:
-                if c1.button("👍 Helpful", key=f"up_{last['qid']}"):
+                row = st.container(horizontal=True)
+                if row.button("👍 Helpful", key=f"up_{last['qid']}"):
                     db.set_helpful(last["qid"], True)
                     last["rated"] = True
                     st.rerun()
-                if c2.button("👎 Not helpful", key=f"down_{last['qid']}"):
+                if row.button("👎 Not helpful", key=f"down_{last['qid']}"):
                     db.set_helpful(last["qid"], False)
                     last["rated"] = False
                     st.rerun()
             else:
-                c1.caption("Thanks, feedback logged.")
+                st.caption("Thanks, feedback logged.")
     else:
         with st.container(key="noanswer_card"):
             st.markdown("### 🙋 I don't have an approved instruction for this. Ask your lead.")
