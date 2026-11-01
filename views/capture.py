@@ -25,7 +25,7 @@ chips(PROMPTS)
 up_col, or_col, sample_col = st.columns([4, 0.5, 2], vertical_alignment="center")
 audio = up_col.file_uploader("Upload a recording", type=["mp3", "m4a", "wav"])
 or_col.markdown("<div style='text-align:center'>or</div>", unsafe_allow_html=True)
-if sample_col.button("📄 Use sample transcript", width="stretch"):
+if sample_col.button("Use sample transcript", width="stretch"):
     st.session_state.capture_transcript = SAMPLE.read_text().strip()
     st.session_state.capture_source = "sample"
     st.session_state.capture_done = None
@@ -35,7 +35,7 @@ sample_msg = st.empty()  # filled after the draft button, so it disappears once 
 if st.session_state.get("whisper_error"):
     st.warning(st.session_state.whisper_error)
 
-if st.button("✨ Create draft", type="primary"):
+if st.button("Create draft", type="primary", icon=":material/edit_note:"):
     try:
         transcript = st.session_state.get("capture_transcript", "")
         if audio is not None and st.session_state.get("capture_source") != "sample":
@@ -65,7 +65,7 @@ if st.session_state.get("capture_source") == "sample":
 done = st.session_state.get("capture_done")
 if done:
     b = done["body"]
-    st.success(f"Draft {done['id']} saved with Dave as author. It is waiting for Priya's review "
+    st.success(f"Draft `{done['id']}` saved with Dave as author. It is waiting for Priya's review "
                "and is not visible to new hires yet.")
     m1, m2, m3, m4 = st.columns(4)
     m1.metric("Steps", len(b["steps"]))
@@ -74,5 +74,5 @@ if done:
     m4.metric("Items to confirm", len(b["low_confidence"]))
     st.markdown("**Transcript**")
     st.markdown(f'<div class="transcript">{esc(done["transcript"])}</div>', unsafe_allow_html=True)
-    if st.button("Go to Review & Approve as Priya →", type="primary"):
+    if st.button("Go to Review & Approve as Priya", type="primary", icon=":material/arrow_forward:"):
         st.switch_page("views/review.py")

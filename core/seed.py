@@ -13,7 +13,7 @@ def load_seed() -> dict:
 
 
 def _days_ago(n: int) -> str:
-    return (datetime.now() - timedelta(days=n)).replace(microsecond=0).isoformat()
+    return (datetime.now(db.TZ) - timedelta(days=n)).replace(microsecond=0).isoformat()
 
 
 def seed_instructions() -> list[dict]:

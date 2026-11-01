@@ -3,8 +3,10 @@ import json
 import sqlite3
 from datetime import datetime
 from pathlib import Path
+from zoneinfo import ZoneInfo
 
 DB_PATH = Path(__file__).resolve().parent.parent / "data" / "app.db"
+TZ = ZoneInfo("America/Toronto")
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS instructions (
@@ -35,7 +37,12 @@ CREATE TABLE IF NOT EXISTS questions (
 
 
 def now() -> str:
-    return datetime.now().isoformat(timespec="seconds")
+    return datetime.now(TZ).isoformat(timespec="seconds")
+
+
+def local_time(ts: str) -> datetime:
+    """Parse a stored timestamp as Toronto time. Old rows without an offset are in the server's local time."""
+    return datetime.fromisoformat(ts).astimezone(TZ)
 
 
 def connect() -> sqlite3.Connection:

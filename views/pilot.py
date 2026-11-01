@@ -3,13 +3,14 @@ from datetime import datetime
 import streamlit as st
 
 from core import db
-from core.ui import APP_NAME, card, goal_card, stage_strip
+from core.ui import APP_NAME, card, eyebrow, goal_card, mono, stage_strip
 
 st.caption(APP_NAME)
 st.title("Pilot Plan & Metrics")
 stage_strip()
 
 # ---------- timeline ----------
+eyebrow("Pilot")
 st.subheader("4-week pilot")
 weeks = [
     ("Week 0", "Baseline", "Log supervisor time on repeat questions, scrap and onboarding hours."),
@@ -20,7 +21,7 @@ weeks = [
 with st.container(key="week_cards"):
     for col, (when, title, text) in zip(st.columns(4), weeks):
         col.markdown(card(f"{when} · {title}", text), unsafe_allow_html=True)
-st.markdown('<div class="scope-line">Every week: 30-minute progress check-in with the supervisor to review KPIs, '
+st.markdown('<div class="note-line">Every week: 30-minute progress check-in with the supervisor to review KPIs, '
             'new gaps and which jobs to capture next.</div>', unsafe_allow_html=True)
 
 # ---------- success metrics ----------
@@ -30,26 +31,29 @@ questions = db.all_questions()
 rated = [q for q in questions if q["helpful"] is not None]
 helpful_pct = round(100 * sum(q["helpful"] for q in rated) / len(rated)) if rated else None
 if questions:
-    first = min(datetime.fromisoformat(q["asked_at"]) for q in questions)
-    weeks_running = max(1.0, (datetime.now() - first).days / 7)
+    first = min(db.local_time(q["asked_at"]) for q in questions)
+    weeks_running = max(1.0, (datetime.now(db.TZ) - first).days / 7)
     people = len({q["asked_by"] for q in questions})
     per_hire_week = len(questions) / people / weeks_running
 else:
     per_hire_week = None
 
+eyebrow("Measure")
 st.subheader("Success metrics, agreed with the owner in Week 0")
 st.caption("Current is pulled live from the app's database.")
 kpis = [
-    ("Supervisor hours on repeat questions (per lead, per week)", "5", "Down 30% (3.5)", "Measured in week 4"),
-    ("Instructions approved", "0", "10+", str(len(approved))),
-    ("Answers marked helpful", "–", "70%+", f"{helpful_pct}% of {len(rated)} rated" if rated else "–"),
+    ("Supervisor hours on repeat questions (per lead, per week)", mono("5"),
+     f"Down {mono('30%')} ({mono('3.5')})", "Measured in week 4"),
+    ("Instructions approved", mono("0"), mono("10+"), mono(len(approved))),
+    ("Answers marked helpful", "–", mono("70%+"),
+     f"{mono(f'{helpful_pct}%')} of {mono(len(rated))} rated" if rated else "–"),
     ("Questions asked per new hire per week", "Not tracked", "Tracked weekly",
-     f"{per_hire_week:.1f}" if per_hire_week is not None else "–"),
-    ("Unsafe or made-up answers in spot checks", "–", "0", "Weekly spot check + 15‑question test set"),
+     mono(f"{per_hire_week:.1f}") if per_hire_week is not None else "–"),
+    ("Unsafe or made-up answers in spot checks", "–", mono("0"), "Weekly spot check + 15‑question test set"),
 ]
 table = "| KPI | Baseline | Target | Current |\n|---|---|---|---|\n"
 table += "".join(f"| {k} | {b} | {t} | **{c}** |\n" for k, b, t, c in kpis)
-st.markdown(table)
+st.markdown(table, unsafe_allow_html=True)
 
 # ---------- roadmap ----------
 st.subheader("Roadmap")

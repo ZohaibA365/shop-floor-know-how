@@ -1,6 +1,6 @@
 import streamlit as st
 
-from core.ui import APP_NAME, CLIENT_LABEL, card, stage_strip
+from core.ui import APP_NAME, CLIENT_LABEL, card, eyebrow, stage_strip
 
 st.caption(f"{APP_NAME} · {CLIENT_LABEL}")
 st.title("Dave retires in 8 months. What he knows isn't written down anywhere.")
@@ -18,7 +18,7 @@ with st.container(key="problem_cards"):
     c3.markdown(card("The opportunity", "Ontario manufacturing workers retire every year.", big="~20,000"),
                 unsafe_allow_html=True)
 
-st.subheader("Value estimate")
+eyebrow("Value estimate")
 st.caption("Example assumptions, replaced with the client's real numbers in week 1")
 rows = [
     ("Supervisor time on repeat questions", "3 leads × 5 hrs/week, cut in half, 48 weeks, $45/hr", 16_200),
@@ -38,5 +38,5 @@ with st.expander("How I'd confirm this with the client", expanded=False):
                 "3. How long until a new hire runs a job alone?\n"
                 "4. What did the last scrap or rework problem cost?")
 
-st.markdown('<div class="scope-line">Release 1 scope: one machine area, one loop (capture, approve, ask). '
+st.markdown('<div class="note-line">Release 1 scope: one machine area, one loop (capture, approve, ask). '
             'No integrations.</div>', unsafe_allow_html=True)

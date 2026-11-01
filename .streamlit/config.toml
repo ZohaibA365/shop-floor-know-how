@@ -1,10 +1,38 @@
 [theme]
 base = "light"
-primaryColor = "#3A6EA5"
+primaryColor = "#1F3A5F"
+backgroundColor = "#F7F6F3"
+secondaryBackgroundColor = "#FFFFFF"
+textColor = "#1F2328"
+linkColor = "#1F3A5F"
+borderColor = "#E4E2DD"
+showWidgetBorder = true
+baseRadius = "6px"
+baseFontSize = 16
+font = "IBM Plex Sans:https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap, sans-serif"
+codeFont = "IBM Plex Mono:https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&display=swap, monospace"
+
+# Alerts reuse the status colours: info is neutral, success = approved, error = safety, warning = needs review.
+blueColor = "#6B6F76"
+blueBackgroundColor = "#EFEEEA"
+blueTextColor = "#1F2328"
+greenColor = "#1E6B47"
+greenBackgroundColor = "#ECF6F0"
+greenTextColor = "#1E6B47"
+redColor = "#B42318"
+redBackgroundColor = "#FEF3F2"
+redTextColor = "#B42318"
+orangeColor = "#8A5A00"
+orangeBackgroundColor = "#FFF6E5"
+orangeTextColor = "#8A5A00"
+yellowColor = "#8A5A00"
+yellowBackgroundColor = "#FFF6E5"
+yellowTextColor = "#8A5A00"
+
+[theme.sidebar]
 backgroundColor = "#FFFFFF"
-secondaryBackgroundColor = "#F2F5F8"
-textColor = "#1F2A36"
-baseFontSize = 18
+secondaryBackgroundColor = "#F7F6F3"
+borderColor = "#E4E2DD"
 
 [client]
 toolbarMode = "minimal"

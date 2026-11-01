@@ -3,7 +3,7 @@ import streamlit as st
 from core import db
 from core.ask import ask
 from core.llm import LLMError
-from core.ui import APP_NAME, esc, nice_date, role_badge, safety_box
+from core.ui import APP_NAME, esc, mono, nice_date, role_badge, safety_box
 
 EXAMPLES = [
     "My bend is coming out at 92 degrees, what do I do?",
@@ -36,7 +36,7 @@ def run_question(question: str):
 with st.form("ask_form", clear_on_submit=True, border=False):
     col_q, col_btn = st.columns([6, 1], vertical_alignment="bottom")
     typed = col_q.text_input("Ask about any job", placeholder="e.g. What die do I use for BR-220?")
-    if col_btn.form_submit_button("Ask", type="primary", width="stretch"):
+    if col_btn.form_submit_button("Ask", type="primary", width="stretch", icon=":material/search:"):
         run_question(typed)
 
 st.write("Try one:")
@@ -57,18 +57,18 @@ if last:
             if last["safety_note"]:
                 st.markdown(safety_box(last["safety_note"]), unsafe_allow_html=True)
             st.markdown(
-                f'<div class="source-line">📄 From: <b>{esc(src["job_name"])}</b> ({esc(src["id"])}) · '
+                f'<div class="source-line">From: <b>{esc(src["job_name"])}</b> ({mono(src["id"])}) · '
                 f'by {esc(src["author"])} · approved by {esc(src["approver"])}, '
-                f'{nice_date(src["approved_at"])} · v{src["version"]}</div>',
+                f'{mono(nice_date(src["approved_at"]))} · {mono("v" + str(src["version"]))}</div>',
                 unsafe_allow_html=True,
             )
             if last["rated"] is None:
                 row = st.container(horizontal=True)
-                if row.button("👍 Helpful", key=f"up_{last['qid']}"):
+                if row.button("Helpful", key=f"up_{last['qid']}"):
                     db.set_helpful(last["qid"], True)
                     last["rated"] = True
                     st.rerun()
-                if row.button("👎 Not helpful", key=f"down_{last['qid']}"):
+                if row.button("Not helpful", key=f"down_{last['qid']}"):
                     db.set_helpful(last["qid"], False)
                     last["rated"] = False
                     st.rerun()
@@ -76,5 +76,5 @@ if last:
                 st.caption("Thanks, feedback logged.")
     else:
         with st.container(key="noanswer_card"):
-            st.markdown("### 🙋 I don't have an approved instruction for this. Ask your lead.")
+            st.markdown("### I don't have an approved instruction for this. Ask your lead.")
             st.markdown("Sent to Priya's gaps list, so this job can be captured next.")

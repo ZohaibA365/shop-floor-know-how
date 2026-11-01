@@ -1,10 +1,12 @@
 """Manufacturing Knowledge Capture: interview demo. Run with: streamlit run app.py"""
+from pathlib import Path
+
 import streamlit as st
 
 from core import seed, transcribe
-from core.ui import APP_NAME, CLIENT_LABEL, ROLES, inject_css
+from core.ui import APP_NAME, CLIENT_LABEL, ROLES, esc, inject_css
 
-st.set_page_config(page_title=APP_NAME, page_icon="🛠️", layout="wide")
+st.set_page_config(page_title=APP_NAME, page_icon=":material/precision_manufacturing:", layout="wide")
 inject_css()
 seed.ensure_seeded()
 
@@ -20,19 +22,29 @@ PAGES = [
 ]
 nav = st.navigation(PAGES, position="hidden")
 
+current_role = next((k for k, r in ROLES.items() if Path(r["page"]).stem == nav.url_path), None)
+
+
+def _on_switch_user():
+    st.session_state.pending_user = st.session_state.switch_user
+
+
 with st.sidebar:
-    st.markdown(f"## 🛠️ {APP_NAME}")
-    st.caption(CLIENT_LABEL)
+    st.markdown(f'<p class="side-title">{esc(APP_NAME)}</p><p class="side-client">{esc(CLIENT_LABEL)}</p>',
+                unsafe_allow_html=True)
     st.divider()
     for page in PAGES:
         st.page_link(page)
     st.divider()
 
-    st.markdown("**Switch user**")
-    for key, label in [("veteran", "Veteran"), ("supervisor", "Supervisor"), ("new_hire", "New hire")]:
-        role = ROLES[key]
-        if st.button(f"{label} · {role['name']}", key=f"role_{key}", width="stretch"):
-            st.switch_page(role["page"])
+    # The control always shows whose page you are on (none on the Problem and Pilot pages).
+    st.session_state.switch_user = current_role
+    st.segmented_control("Switch user", list(ROLES), format_func=lambda k: ROLES[k]["name"],
+                         key="switch_user", on_change=_on_switch_user, width="stretch",
+                         help="Dave: veteran · Priya: supervisor · Jordan: new hire")
+    pending = st.session_state.pop("pending_user", None)
+    if pending and pending != current_role:
+        st.switch_page(ROLES[pending]["page"])
     st.divider()
 
     with st.expander("Demo controls", expanded=False):
